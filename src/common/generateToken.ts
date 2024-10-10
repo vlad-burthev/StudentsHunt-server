@@ -1,9 +1,15 @@
+import { config } from 'dotenv';
 import * as jwt from 'jsonwebtoken';
 import { ITokenUserData } from 'src/interface';
 
-const generateToken = (userData: ITokenUserData): string => {
-  const token = jwt.sign(userData, process.env.SECRET_KEY, {
-    expiresIn: '24h', // Установите время жизни токена
+config();
+
+export const generateToken = (userData) => {
+  const accessToken = jwt.sign(userData, process.env.JWT_SECRET_KEY, {
+    expiresIn: '24h',
   });
-  return token;
+  const refreshToken = jwt.sign(userData, process.env.JWT_REFRESH_SECRET_KE, {
+    expiresIn: '30d',
+  });
+  return { accessToken, refreshToken };
 };
