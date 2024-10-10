@@ -4,6 +4,7 @@ import {
   ExecutionContext,
   ForbiddenException,
 } from '@nestjs/common';
+import { isJWT } from 'class-validator';
 import { config } from 'dotenv';
 import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
@@ -15,7 +16,11 @@ config();
 export class AdminGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request: Request = context.switchToHttp().getRequest();
-    const cookieToken = request.cookies['token'];
+    const cookieToken = request.cookies['accessToken'];
+
+    if (!isJWT(cookieToken)) {
+      throw new ForbiddenException('Токен не знайдено.');
+    }
 
     if (!cookieToken) {
       throw new ForbiddenException('Токен не знайдено.');

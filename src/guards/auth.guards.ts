@@ -7,12 +7,17 @@ import {
 import { Request } from 'express';
 import { ITokenUserData } from 'src/interface';
 import * as jwt from 'jsonwebtoken';
+import { isJWT } from 'class-validator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request: Request = context.switchToHttp().getRequest();
-    const cookieToken = request.cookies['token'];
+    const cookieToken = request.cookies['accessToken'];
+
+    if (!isJWT(cookieToken)) {
+      throw new ForbiddenException('Токен не знайдено.');
+    }
 
     if (!cookieToken) {
       throw new ForbiddenException('Токен не знайдено.');
