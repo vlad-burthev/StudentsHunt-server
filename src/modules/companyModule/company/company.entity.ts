@@ -1,5 +1,5 @@
-import { EGRPOU } from 'src/services/egrpou/egrpou.entity';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ERole } from 'src/interface';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('company')
 export class Company {
@@ -15,11 +15,22 @@ export class Company {
   @Column({ type: 'varchar', unique: true, nullable: false })
   email: string;
 
+  @Column({
+    type: 'enum',
+    enum: ERole,
+    nullable: false,
+    default: ERole.company,
+  })
+  role: ERole;
+
   @Column({ type: 'varchar', nullable: false })
   password: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: false })
   about?: string;
+
+  @Column({ type: 'varchar', unique: true, nullable: false })
+  phone: string;
 
   @Column({ type: 'varchar', unique: true, nullable: false })
   site: string;
@@ -27,13 +38,18 @@ export class Company {
   @Column({ type: 'varchar', unique: true, nullable: false })
   avatar: string;
 
-  @Column({ type: 'jsonb' })
-  photos?: string[];
-
   @Column({ type: 'varchar', unique: true, nullable: false })
   egrpouCode: string;
 
-  // Связь с таблицей EDRPOU
-  @OneToOne(() => EGRPOU, (egrpou) => egrpou.egrpou)
-  egrpou: EGRPOU;
+  @Column({ type: 'jsonb' })
+  photos?: string[];
+
+  @Column({ type: 'boolean', default: false, nullable: false })
+  isActivated: boolean;
+
+  @Column({ type: 'varchar', unique: true, nullable: false })
+  activationLink: string;
+
+  @Column({ type: 'boolean', default: false, nullable: false })
+  isVerified: boolean;
 }

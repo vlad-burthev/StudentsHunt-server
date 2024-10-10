@@ -1,14 +1,7 @@
-import {
-  IsEmail,
-  IsString,
-  Length,
-  IsOptional,
-  IsPhoneNumber,
-  IsNotEmpty,
-} from 'class-validator';
+import { IsEmail, IsPhoneNumber, IsString, Length } from 'class-validator';
 import { IsCorporateEmailValidator } from 'src/common/customValidators';
 
-export class CreateCompanyDto {
+export class CreateRecruiterDTO {
   @IsString({ message: 'Email має бути рядком' })
   @IsEmail({}, { message: 'Некоректний формат email' })
   @IsCorporateEmailValidator({ message: 'Необхідна корпоративна пошта' })
@@ -18,18 +11,10 @@ export class CreateCompanyDto {
   @Length(6, 255, { message: 'Пароль має містити щонайменше 6 символів' })
   password: string;
 
-  @IsString({ message: 'Сайт має бути строкою' })
-  @IsOptional() // Поле site може бути не обов'язковим
-  site: string;
+  @IsString({ message: 'Імʼя повинно бути строкою' })
+  @Length(4, 50, { message: 'Імʼя повино бути довше за 4 літери' })
+  name: string;
 
   @IsPhoneNumber('UA', { message: 'Некоректний номер телефону' })
   phone: string;
-
-  @IsNotEmpty({ message: 'Код ЄДРПОУ не може бути пустим' })
-  egrpouCode: string;
-
-  @IsNotEmpty({
-    message: 'Поле з інформацією про компанію не може бути пустим',
-  })
-  about: string;
 }
