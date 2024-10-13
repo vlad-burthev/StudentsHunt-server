@@ -23,10 +23,21 @@ export class CompanyGuard implements CanActivate {
       throw new ForbiddenException('Токен не знайдено.');
     }
 
-    const decodeToken: ITokenUserData = jwt.verify(
-      cookieToken,
-      process.env.JWT_SECRET_KEY,
-    ) as ITokenUserData;
+    let decodeToken: ITokenUserData;
+
+    try {
+      // Попытка верификации токена
+      decodeToken = jwt.verify(
+        cookieToken,
+        process.env.JWT_SECRET_KEY,
+      ) as ITokenUserData;
+    } catch (error) {
+      // Обработка ошибки токена
+      if (error instanceof jwt.TokenExpiredError) {
+        throw new ForbiddenException('Термін дії токена минув.');
+      }
+      throw new ForbiddenException('Недопустимий токен.');
+    }
 
     if (!decodeToken || typeof decodeToken.role !== 'string') {
       throw new ForbiddenException('Термін дії токена минув.');

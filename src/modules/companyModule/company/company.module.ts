@@ -6,6 +6,7 @@ import { Company } from './company.entity';
 import { EGRPOUModule } from 'src/modules/egrpouModule/egrpou.module';
 import { EGRPOU } from 'src/modules/egrpouModule/egrpou.entity';
 import { TokenModule } from 'src/modules/tokenModule/token.module';
+import { CloudinaryService } from 'src/services/cloudinary/cloudinary.service';
 
 @Module({
   imports: [
@@ -14,6 +15,6 @@ import { TokenModule } from 'src/modules/tokenModule/token.module';
     TokenModule,
   ],
   controllers: [CompanyController],
-  providers: [CompanyService],
+  providers: [CompanyService, CloudinaryService],
 })
 export class CompanyModule {}

@@ -1,8 +1,22 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Req,
+  Res,
+  UploadedFile,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { RecruiterService } from './recruiter.service';
 import { Response, Request } from 'express';
 import { CompanyGuard } from 'src/guards/company.guards';
 import { CreateRecruiterDTO } from './recruiter.dto';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 
 @Controller('recruiter')
 export class RecruiterController {
@@ -10,15 +24,25 @@ export class RecruiterController {
 
   @UseGuards(CompanyGuard)
   @Post('create')
+  @UseInterceptors(
+    FileInterceptor('avatar', { limits: { fileSize: 5 * 1024 * 1024 } }),
+  )
+  // @UseInterceptors(
+  //   FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }], {
+  //     limits: { fileSize: 5 * 1024 * 1024 },
+  //   }),
+  // )
   async createRecruiter(
     @Req() req: Request,
     @Res() res: Response,
-    // @Body() createRecruiterData: CreateRecruiterDTO,
+    @UploadedFile() avatar: Express.Multer.File,
+    @Body() createRecruiterData: CreateRecruiterDTO,
   ) {
     return this.recruiterService.createRecruiterService(
       req,
       res,
-      //   createRecruiterData,
+      avatar,
+      createRecruiterData,
     );
   }
 }

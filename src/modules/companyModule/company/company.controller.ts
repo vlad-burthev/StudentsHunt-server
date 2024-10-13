@@ -14,6 +14,7 @@ import { Request, Response } from 'express';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './company.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { CloudinaryService } from 'src/services/cloudinary/cloudinary.service';
 
 @Controller('company')
 export class CompanyController {
@@ -32,7 +33,7 @@ export class CompanyController {
   createCompany(
     @Res() res: Response,
     @UploadedFiles()
-    images: { avatar: Express.Multer.File; photos: Express.Multer.File[] },
+    images: any,
     @Body() createData: CreateCompanyDto,
   ) {
     return this.companyService.createCompany(res, createData, images);

@@ -4,6 +4,11 @@ export enum ERole {
   recruiter = 'recruiter',
 }
 
+export enum EResourceType {
+  image = 'image',
+  pdf = 'raw',
+}
+
 export interface ITokenUserData {
   id: string;
   role: ERole;

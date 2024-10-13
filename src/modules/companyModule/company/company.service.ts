@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CreateCompanyDto } from './company.dto';
 import { Company } from './company.entity';
@@ -9,25 +9,26 @@ import * as bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
 import { getNameFromEgrpou } from 'src/common/getNameFromEgrpou';
 import { generateSlug } from 'src/common/generateSlug';
-import { ConvertToWebp } from 'src/common/convertToWebp';
 import { EgrpouService } from 'src/modules/egrpouModule/egrpou.service';
 import { EGRPOU } from 'src/modules/egrpouModule/egrpou.entity';
 import { TokenService } from 'src/modules/tokenModule/token.service';
 import { MailService } from 'src/services/mail/mailService';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
+import { CloudinaryService } from 'src/services/cloudinary/cloudinary.service';
+import { EResourceType } from 'src/interface';
 
 @Injectable()
 export class CompanyService {
   constructor(
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
-
     @InjectRepository(EGRPOU)
     private readonly egrpouRepository: Repository<EGRPOU>,
 
     private readonly tokenService: TokenService,
     private readonly configService: ConfigService,
+    private readonly cloudinaryService: CloudinaryService,
     private egrpouService: EgrpouService,
   ) {}
 
@@ -45,6 +46,8 @@ export class CompanyService {
   ) {
     try {
       const { egrpouCode, email, password, site, phone, about } = createData;
+
+      // Проверка на существующую компанию
       const existingCompany = await this.companyRepository.findOne({
         where: {
           egrpouCode,
@@ -56,18 +59,14 @@ export class CompanyService {
 
       if (existingCompany) {
         let messages: string[] = [];
-        if (phone === existingCompany?.phone) {
+        if (phone === existingCompany?.phone)
           messages.push('Цей номер вже зареєстрований');
-        }
-        if (site === existingCompany?.site) {
+        if (site === existingCompany?.site)
           messages.push('Ця адреса сайту вже зареєстрована');
-        }
-        if (email === existingCompany?.email) {
+        if (email === existingCompany?.email)
           messages.push('Ця пошта вже зареєстрована');
-        }
-        if (egrpouCode === existingCompany?.egrpouCode) {
+        if (egrpouCode === existingCompany?.egrpouCode)
           messages.push('Цей код ЄДРПОУ вже зареєстрована');
-        }
 
         return HttpResponseHandler.error({
           res,
@@ -77,49 +76,77 @@ export class CompanyService {
         });
       }
 
+      // Добавление информации о компании через сервис EGRPOU
       let egrpouData = await this.egrpouService.addEGRPOU(res, egrpouCode);
 
+      // Хэширование пароля
       const hashPassword = await bcrypt.hash(password, 5);
 
+      // Генерация ссылки активации
       const activationLink = uuid.v4();
 
+      // Получение названия компании
       const name = getNameFromEgrpou(egrpouData.name);
 
+      // Генерация slug
       const slug = generateSlug(name);
 
       const { avatar, photos } = images;
 
-      // Сохранение аватара
-      let avatarName: string = '';
+      console.log({
+        avatar,
+        photos,
+      });
+
+      // Загрузка аватара на Cloudinary
+      let avatarUrl: string = '';
       if (avatar) {
         try {
-          avatarName = await ConvertToWebp.convertAvatar(res, avatar);
+          const uploadResult = await this.cloudinaryService.uploadImage(
+            avatar[0],
+            this.configService.get<string>('CLOUDINARY_DIR_COMPANY'),
+            EResourceType.image,
+          );
+          avatarUrl = this.cloudinaryService.getOptimizedImageUrl(
+            uploadResult.public_id,
+          );
         } catch (error) {
           return HttpResponseHandler.error({
             res,
-            message: error.message,
-            error: error.name,
-            statusCode: error.statusCode || 500,
+            message: 'Ошибка при загрузке аватара',
+            error: error.message,
+            statusCode: HttpStatus.FORBIDDEN,
           });
         }
       }
 
-      // Сохранение изображений
-      let photosName: string[] = [];
-      if (images) {
+      // Загрузка фотографий на Cloudinary
+      let photosUrls: string[] = [];
+      if (photos && photos.length > 0) {
         try {
-          photosName = await ConvertToWebp.convertImages(photos);
+          for (const photo of photos) {
+            const uploadResult = await this.cloudinaryService.uploadImage(
+              photo,
+              this.configService.get<string>('CLOUDINARY_DIR_COMPANY'),
+              EResourceType.image,
+            );
+            const photoUrl = this.cloudinaryService.getOptimizedImageUrl(
+              uploadResult.public_id,
+            );
+            photosUrls.push(photoUrl);
+          }
         } catch (error) {
           return HttpResponseHandler.error({
             res,
-            message: error.message,
-            error: error.name,
-            statusCode: error.statusCode || 500,
+            message: 'Ошибка при загрузке фотографий',
+            error: error.message,
+            statusCode: 500,
           });
         }
       }
 
-      const createdUser = await this.companyRepository.save({
+      // Сохранение компании в базе данных
+      const createdCompany = await this.companyRepository.save({
         slug,
         name,
         email,
@@ -127,29 +154,31 @@ export class CompanyService {
         about,
         phone,
         site,
-        avatar: avatarName,
-        photos: photosName,
+        avatar: avatarUrl,
+        photos: photosUrls,
         egrpouCode,
         activationLink,
       });
 
+      // Сохранение информации о компании в EGRPOU
       await this.egrpouRepository.save(egrpouData);
 
+      // Отправка письма активации
       await new MailService().sendActivationMail(
         email,
-        this.configService.get<string>('API_URL') +
-          'api/company/activate/' +
-          activationLink,
+        `${this.configService.get<string>('API_URL')}/api/company/activate/${activationLink}`,
       );
+
+      // Генерация и сохранение токенов
       const tokens = this.tokenService.generateTokens({
-        role: createdUser.role,
-        id: createdUser.id,
+        role: createdCompany.role,
+        id: createdCompany.id,
         slug,
-        isActivated: createdUser.isActivated,
-        isVerified: createdUser.isVerified,
+        isActivated: createdCompany.isActivated,
+        isVerified: createdCompany.isVerified,
       });
 
-      await this.tokenService.saveToken(createdUser.id, tokens.refreshToken);
+      await this.tokenService.saveToken(createdCompany.id, tokens.refreshToken);
 
       return HttpResponseHandler.response({
         res,
