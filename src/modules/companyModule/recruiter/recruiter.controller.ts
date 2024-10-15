@@ -27,11 +27,6 @@ export class RecruiterController {
   @UseInterceptors(
     FileInterceptor('avatar', { limits: { fileSize: 5 * 1024 * 1024 } }),
   )
-  // @UseInterceptors(
-  //   FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }], {
-  //     limits: { fileSize: 5 * 1024 * 1024 },
-  //   }),
-  // )
   async createRecruiter(
     @Req() req: Request,
     @Res() res: Response,

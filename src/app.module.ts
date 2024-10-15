@@ -10,24 +10,13 @@ import { University } from './modules/universityModule/university/university.ent
 import { Token } from './modules/tokenModule/token.entity';
 import { TokenModule } from './modules/tokenModule/token.module';
 import { EGRPOUModule } from './modules/egrpouModule/egrpou.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { AuthModule } from './modules/authModule/auth.module';
 import { Recruiter } from './modules/companyModule/recruiter/recruiter.entity';
 import { RecruiterModule } from './modules/companyModule/recruiter/recruiter.module';
+import { WorkType } from './modules/workType/workType.entity';
 
 @Module({
   imports: [
-    ServeStaticModule.forRoot(
-      {
-        rootPath: join(__dirname, '..', 'uploads/images'), // Папка с изображениями
-        serveRoot: '/images',
-      },
-      {
-        rootPath: join(__dirname, '..', 'uploads/avatars'), // Папка с аватарами
-        serveRoot: '/avatars',
-      },
-    ),
     CacheModule.register({
       isGlobal: true,
     }),
@@ -49,11 +38,12 @@ import { RecruiterModule } from './modules/companyModule/recruiter/recruiter.mod
         entities: [Company, EGRPOU, University, Token, Recruiter],
       }),
     }),
-    // EGRPOUModule,
+    EGRPOUModule,
     CompanyModule,
     TokenModule,
     AuthModule,
     RecruiterModule,
+    WorkType,
   ],
   controllers: [],
   providers: [],

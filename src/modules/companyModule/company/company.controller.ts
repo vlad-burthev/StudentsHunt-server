@@ -34,8 +34,9 @@ export class CompanyController {
     @Res() res: Response,
     @UploadedFiles()
     images: any,
-    @Body() createData: CreateCompanyDto,
+    @Body() createData: any,
   ) {
+    console.log(createData);
     return this.companyService.createCompany(res, createData, images);
   }
 
@@ -43,9 +44,6 @@ export class CompanyController {
   activateAccoun(@Res() res: Response, @Param('link') activateLink: string) {
     return this.companyService.activate(res, activateLink);
   }
-
-  @Get('/refresh')
-  refreshToken() {}
 
   @Get('/get_all')
   getAllCompanies(
@@ -56,7 +54,7 @@ export class CompanyController {
     return this.companyService.getAllCompanies(res, req, query);
   }
 
-  @Get('/getOne')
+  @Get('/get_one')
   getTest(@Res() res: Response) {
     return this.companyService.getCompany(res);
   }

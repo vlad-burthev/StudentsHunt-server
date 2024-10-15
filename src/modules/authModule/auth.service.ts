@@ -8,20 +8,28 @@ import { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import { HttpResponseHandler } from 'src/services/response/HttpResponseHandler';
 import { TokenService } from '../tokenModule/token.service';
+import { Recruiter } from '../companyModule/recruiter/recruiter.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
+    @InjectRepository(Recruiter)
+    private readonly recruiterRepository: Repository<Recruiter>,
     private readonly tokenService: TokenService,
   ) {}
 
   async login(res: Response, userData: any) {
     try {
-      let user: Company; /*| University;*/
+      let user: Company | Recruiter; /*| University;*/
       if (userData.role === ERole.company) {
         user = await this.companyRepository.findOne({
+          where: { email: userData.email },
+        });
+      }
+      if (userData.role === ERole.recruiter) {
+        user = await this.recruiterRepository.findOne({
           where: { email: userData.email },
         });
       }
@@ -92,6 +100,8 @@ export class AuthService {
       const tokenFromDb = this.tokenService.findToken(refreshToken);
 
       if (!tokenFromDb || !userData) {
+        res.clearCookie('refreshToken');
+        res.clearCookie('accessToken');
         return HttpResponseHandler.error({
           res,
           statusCode: 401,

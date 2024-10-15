@@ -41,10 +41,11 @@ export class CompanyService {
 
   async createCompany(
     res: Response,
-    createData: CreateCompanyDto,
+    createData: any,
     images: { avatar: Express.Multer.File; photos: Express.Multer.File[] },
   ) {
     try {
+      console.log(createData);
       const { egrpouCode, email, password, site, phone, about } = createData;
 
       // Проверка на существующую компанию
@@ -93,11 +94,6 @@ export class CompanyService {
 
       const { avatar, photos } = images;
 
-      console.log({
-        avatar,
-        photos,
-      });
-
       // Загрузка аватара на Cloudinary
       let avatarUrl: string = '';
       if (avatar) {
@@ -138,7 +134,7 @@ export class CompanyService {
         } catch (error) {
           return HttpResponseHandler.error({
             res,
-            message: 'Ошибка при загрузке фотографий',
+            message: 'Помилка при завантажені фото',
             error: error.message,
             statusCode: 500,
           });
@@ -166,7 +162,7 @@ export class CompanyService {
       // Отправка письма активации
       await new MailService().sendActivationMail(
         email,
-        `${this.configService.get<string>('API_URL')}/api/company/activate/${activationLink}`,
+        `${this.configService.get<string>('API_URL')}api/company/activate/${activationLink}`,
       );
 
       // Генерация и сохранение токенов
@@ -185,19 +181,6 @@ export class CompanyService {
         data: 'Успішно зареєстровано',
         statusCode: 201,
       });
-    } catch (error) {
-      return HttpResponseHandler.error({
-        res,
-        message: error.message,
-        error: error.name,
-        statusCode: error.statusCode || 500,
-      });
-    }
-  }
-
-  async logout(res: Response, req: Request) {
-    try {
-      const refreshToken = req.cookies['refreshToken'];
     } catch (error) {
       return HttpResponseHandler.error({
         res,

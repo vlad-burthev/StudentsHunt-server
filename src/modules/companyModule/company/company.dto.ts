@@ -19,7 +19,6 @@ export class CreateCompanyDto {
   password: string;
 
   @IsString({ message: 'Сайт має бути строкою' })
-  @IsOptional() // Поле site може бути не обов'язковим
   site: string;
 
   @IsPhoneNumber('UA', { message: 'Некоректний номер телефону' })

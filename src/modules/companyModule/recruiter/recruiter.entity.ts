@@ -39,6 +39,15 @@ export class Recruiter {
   @Column({ type: 'varchar', unique: true, nullable: false })
   avatar: string;
 
+  @Column({ type: 'varchar', unique: true, nullable: false })
+  activationLink: string;
+
+  @Column({ type: 'boolean', default: false, nullable: false })
+  isVerified: boolean;
+
+  @Column({ type: 'boolean', default: false, nullable: false })
+  isActivated: boolean;
+
   @OneToOne(() => Company, { onDelete: 'CASCADE', cascade: true })
   @JoinColumn({ name: 'company_id' })
   company: Company;

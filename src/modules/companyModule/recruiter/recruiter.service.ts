@@ -11,6 +11,8 @@ import { Recruiter } from './recruiter.entity';
 import { generateSlug } from 'src/common/generateSlug';
 import { CloudinaryService } from 'src/services/cloudinary/cloudinary.service';
 import { Company } from '../company/company.entity';
+import { MailService } from 'src/services/mail/mailService';
+import * as uuid from 'uuid';
 
 @Injectable()
 export class RecruiterService {
@@ -89,6 +91,9 @@ export class RecruiterService {
         });
       }
 
+      // Генерация ссылки активации
+      const activationLink = uuid.v4();
+
       await this.recruiterRepository.save({
         slug,
         name: createData.name,
@@ -99,7 +104,36 @@ export class RecruiterService {
         avatar: avatarUrl,
       });
 
+      // Отправка письма активации
+      await new MailService().sendActivationMail(
+        createData.email,
+        `${this.configService.get<string>('API_URL')}/api/company/activate/${activationLink}`,
+      );
+
       return res.json('ok');
+    } catch (error) {
+      return HttpResponseHandler.error({
+        res,
+        message: error.message,
+        error: error.name,
+        statusCode: error.statusCode || 500,
+      });
+    }
+  }
+
+  async createVacancy(req: Request, res: Response) {
+    try {
+      const token = req.cookies['accessToken'];
+      const recruiterData = jwt.verify(
+        token,
+        this.configService.get<string>('JWT_SECRET_KEY'),
+      );
+
+      return HttpResponseHandler.response({
+        res,
+        data: 'Vacancy created',
+        statusCode: 201,
+      });
     } catch (error) {
       return HttpResponseHandler.error({
         res,

@@ -15,14 +15,19 @@ export class EgrpouService {
     private readonly egrpouRepository: Repository<EGRPOU>,
   ) {}
 
-  async addEGRPOU(res: Response, egrpouCode: string): Promise<IEgrpou> {
+  async addEGRPOU(res: Response, egrpouCode: string): Promise<any> {
     try {
       const response = await fetch(
         `https://adm.tools/action/gov/api/?egrpou=${egrpouCode}`,
       );
 
       if (!response.ok) {
-        throw Error('ЄДРПОУ не знайдено');
+        return HttpResponseHandler.error({
+          res,
+          message: 'ЄДРПОУ не знайдено',
+          error: 'Bad Request',
+          statusCode: 400,
+        });
       }
 
       const arrayBuffer = await response.arrayBuffer();
@@ -35,7 +40,12 @@ export class EgrpouService {
       });
 
       if (jsonData.error) {
-        throw Error(jsonData.error);
+        return HttpResponseHandler.error({
+          res,
+          message: 'Bad Request',
+          error: jsonData.error,
+          statusCode: 400,
+        });
       }
 
       return {
@@ -49,7 +59,7 @@ export class EgrpouService {
         inn_date: jsonData.export.company.$.inn_date,
       };
     } catch (error) {
-      throw HttpResponseHandler.error({
+      return HttpResponseHandler.error({
         res,
         message: error.message,
         error: error.name,
