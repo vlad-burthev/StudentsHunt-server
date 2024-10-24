@@ -15,6 +15,7 @@ export interface ITokenUserData {
   slug: string;
   isActivated: boolean;
   isVerified: boolean;
+  refreshToken?: string;
 }
 
 export interface IEgrpou {

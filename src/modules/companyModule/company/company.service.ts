@@ -45,7 +45,6 @@ export class CompanyService {
     images: { avatar: Express.Multer.File; photos: Express.Multer.File[] },
   ) {
     try {
-      console.log(createData);
       const { egrpouCode, email, password, site, phone, about } = createData;
 
       // Проверка на существующую компанию

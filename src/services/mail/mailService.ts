@@ -49,7 +49,6 @@ export class MailService {
 
         `,
       });
-      console.log('Письмо успешно отправлено:', result);
     } catch (error) {
       console.error('Ошибка при отправке письма:', error);
       return Error(error);

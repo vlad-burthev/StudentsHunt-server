@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { RequestMethod, ValidationPipe } from '@nestjs/common';
 import * as cors from 'cors';
 import * as cookieParser from 'cookie-parser';
 import { NextFunction, Request, Response } from 'express';
@@ -23,7 +23,12 @@ async function bootstrap() {
   );
 
   app.use(cookieParser());
-  app.use(cors());
+  app.use(
+    cors({
+      origin: process.env.CLIENT_URL,
+      credentials: true,
+    }),
+  );
 
   // Настройка безопасности с помощью Helmet
   app.use(helmet());
@@ -31,7 +36,12 @@ async function bootstrap() {
   // Настройка логирования запросов с помощью Morgan
   app.use(morgan('dev'));
 
-  app.setGlobalPrefix('/api');
+  app.setGlobalPrefix('api', {
+    exclude: [
+      { path: 'auth/google/callback', method: RequestMethod.GET },
+      { path: 'auth/google/login', method: RequestMethod.GET },
+    ],
+  });
 
   // Указываем, что папка `uploads` должна быть доступна как статическая
   // app.useStaticAssets(join(__dirname, '..', 'uploads'));

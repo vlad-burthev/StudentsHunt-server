@@ -36,7 +36,6 @@ export class CompanyController {
     images: any,
     @Body() createData: any,
   ) {
-    console.log(createData);
     return this.companyService.createCompany(res, createData, images);
   }
 

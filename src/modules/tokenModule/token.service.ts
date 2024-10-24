@@ -27,8 +27,6 @@ export class TokenService {
       },
     );
 
-    console.log(accessToken);
-
     const refreshToken = jwt.sign(
       payload,
       this.configService.get<string>('JWT_REFRESH_SECRET_KEY')!,
@@ -100,5 +98,13 @@ export class TokenService {
       where: { refreshToken },
     });
     return tokenData;
+  }
+
+  async getTokenById(userId: string) {
+    const token = await this.tokenRepository.findOne({
+      where: { userId },
+    });
+
+    return token.refreshToken;
   }
 }
