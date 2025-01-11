@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { Company } from '../company/company.entity';
 import { Recruiter } from '../recruiter/recruiter.entity';
-import { WorkType } from 'src/modules/workType/workType.entity';
+import { WorkType } from '../../workType/workType.entity';
 
 @Entity('vacancy')
 export class Vacancy {

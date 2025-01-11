@@ -3,10 +3,10 @@ import { CompanyController } from './company.controller';
 import { CompanyService } from './company.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Company } from './company.entity';
-import { EGRPOUModule } from 'src/modules/egrpouModule/egrpou.module';
-import { EGRPOU } from 'src/modules/egrpouModule/egrpou.entity';
 import { TokenModule } from 'src/modules/tokenModule/token.module';
 import { CloudinaryService } from 'src/services/cloudinary/cloudinary.service';
+import { EGRPOU } from '../../egrpouModule/egrpou.entity';
+import { EGRPOUModule } from '../../egrpouModule/egrpou.module';
 
 @Module({
   imports: [

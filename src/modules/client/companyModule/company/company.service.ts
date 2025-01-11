@@ -8,14 +8,14 @@ import * as bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
 import { getNameFromEgrpou } from 'src/common/getNameFromEgrpou';
 import { generateSlug } from 'src/common/generateSlug';
-import { EgrpouService } from 'src/modules/egrpouModule/egrpou.service';
-import { EGRPOU } from 'src/modules/egrpouModule/egrpou.entity';
 import { TokenService } from 'src/modules/tokenModule/token.service';
 import { MailService } from 'src/services/mail/mailService';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 import { CloudinaryService } from 'src/services/cloudinary/cloudinary.service';
 import { EResourceType } from 'src/interface';
+import { EGRPOU } from '../../egrpouModule/egrpou.entity';
+import { EgrpouService } from '../../egrpouModule/egrpou.service';
 
 @Injectable()
 export class CompanyService {

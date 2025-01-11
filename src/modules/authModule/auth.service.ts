@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { Company } from '../companyModule/company/company.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ERole, ITokenUserData } from 'src/interface';
 import { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import { HttpResponseHandler } from 'src/services/response/HttpResponseHandler';
 import { TokenService } from '../tokenModule/token.service';
-import { Recruiter } from '../companyModule/recruiter/recruiter.entity';
 import { LoginDTO } from './auth.dto';
 import { generateToken } from 'src/common/generateToken';
+import { Company } from '../client/companyModule/company/company.entity';
+import { Recruiter } from '../client/companyModule/recruiter/recruiter.entity';
 
 @Injectable()
 export class AuthService {

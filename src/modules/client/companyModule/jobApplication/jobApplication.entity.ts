@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { Recruiter } from '../recruiter/recruiter.entity';
 import { Company } from '../company/company.entity';
-import { Student } from 'src/modules/studentModule/student/student.entity';
+import { Student } from '../../studentModule/student/student.entity';
 
 @Entity({ name: 'job_application' })
 export class JobApplication {

@@ -3,17 +3,17 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/dotenvConfig';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CompanyModule } from './modules/companyModule/company/company.module';
-import { Company } from './modules/companyModule/company/company.entity';
-import { EGRPOU } from './modules/egrpouModule/egrpou.entity';
-import { University } from './modules/universityModule/university/university.entity';
+import { Company } from './modules/client/companyModule/company/company.entity';
+import { EGRPOU } from './modules/client/egrpouModule/egrpou.entity';
+import { University } from './modules/client/universityModule/university/university.entity';
 import { Token } from './modules/tokenModule/token.entity';
+import { Recruiter } from './modules/client/companyModule/recruiter/recruiter.entity';
+import { EGRPOUModule } from './modules/client/egrpouModule/egrpou.module';
+import { CompanyModule } from './modules/client/companyModule/company/company.module';
 import { TokenModule } from './modules/tokenModule/token.module';
-import { EGRPOUModule } from './modules/egrpouModule/egrpou.module';
 import { AuthModule } from './modules/authModule/auth.module';
-import { Recruiter } from './modules/companyModule/recruiter/recruiter.entity';
-import { RecruiterModule } from './modules/companyModule/recruiter/recruiter.module';
-import { WorkType } from './modules/workType/workType.entity';
+import { RecruiterModule } from './modules/client/companyModule/recruiter/recruiter.module';
+import { WorkType } from './modules/client/workType/workType.entity';
 
 @Module({
   imports: [
