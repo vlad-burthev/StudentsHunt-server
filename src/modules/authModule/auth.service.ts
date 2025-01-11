@@ -1,9 +1,4 @@
-import {
-  HttpCode,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Company } from '../companyModule/company/company.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -48,7 +43,7 @@ export class AuthService {
           error: 'Unauthorized',
         });
       }
-      let decodePassword = bcrypt.compareSync(
+      const decodePassword = bcrypt.compareSync(
         userData.password,
         user?.password,
       );

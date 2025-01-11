@@ -5,7 +5,6 @@ import {
   Req,
   Res,
   UploadedFile,
-  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -13,10 +12,7 @@ import { RecruiterService } from './recruiter.service';
 import { Response, Request } from 'express';
 import { CompanyGuard } from 'src/guards/company.guards';
 import { CreateRecruiterDTO } from './recruiter.dto';
-import {
-  FileFieldsInterceptor,
-  FileInterceptor,
-} from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('recruiter')
 export class RecruiterController {

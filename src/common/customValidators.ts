@@ -2,7 +2,6 @@
 import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
-  ValidationArguments,
   registerDecorator,
   ValidationOptions,
 } from 'class-validator';
@@ -10,14 +9,14 @@ import { publicEmailDomains } from './publicDomains'; // Импортируйт�
 
 @ValidatorConstraint({ name: 'isCorporateEmail', async: false })
 export class IsCorporateEmail implements ValidatorConstraintInterface {
-  validate(value: string, args: ValidationArguments) {
+  validate(value: string) {
     if (!value) return true; // если значение пустое, пропускаем валидацию
 
     const domain = value.split('@')[1]?.toLowerCase();
     return !publicEmailDomains.includes(domain);
   }
 
-  defaultMessage(args: ValidationArguments) {
+  defaultMessage() {
     return 'Пошта повинна бути корпоративною'; // Сообщение об ошибке
   }
 }

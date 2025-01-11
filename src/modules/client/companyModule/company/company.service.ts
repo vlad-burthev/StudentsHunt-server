@@ -1,6 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { CreateCompanyDto } from './company.dto';
 import { Company } from './company.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -29,7 +28,7 @@ export class CompanyService {
     private readonly tokenService: TokenService,
     private readonly configService: ConfigService,
     private readonly cloudinaryService: CloudinaryService,
-    private egrpouService: EgrpouService,
+    private readonly egrpouService: EgrpouService,
   ) {}
 
   async getCompany(res: Response) {
@@ -58,7 +57,7 @@ export class CompanyService {
       });
 
       if (existingCompany) {
-        let messages: string[] = [];
+        const messages: string[] = [];
         if (phone === existingCompany?.phone)
           messages.push('Цей номер вже зареєстрований');
         if (site === existingCompany?.site)
@@ -77,7 +76,7 @@ export class CompanyService {
       }
 
       // Добавление информации о компании через сервис EGRPOU
-      let egrpouData = await this.egrpouService.addEGRPOU(res, egrpouCode);
+      const egrpouData = await this.egrpouService.addEGRPOU(res, egrpouCode);
 
       // Хэширование пароля
       const hashPassword = await bcrypt.hash(password, 5);
@@ -116,7 +115,7 @@ export class CompanyService {
       }
 
       // Загрузка фотографий на Cloudinary
-      let photosUrls: string[] = [];
+      const photosUrls: string[] = [];
       if (photos && photos.length > 0) {
         try {
           for (const photo of photos) {

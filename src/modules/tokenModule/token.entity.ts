@@ -1,6 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
-import { University } from '../universityModule/university/university.entity';
-import { Company } from '../companyModule/company/company.entity';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class Token {

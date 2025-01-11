@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { config } from 'dotenv';
 import * as nodemailer from 'nodemailer';
 import { Transporter } from 'nodemailer';
